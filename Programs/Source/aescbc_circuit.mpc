@@ -1,0 +1,15 @@
+from circuit import Circuit
+
+chunks = int(program.args[1])
+
+sb128 = sbits.get_type(128)
+key = sb128(0x2b7e151628aed2a6abf7158809cf4f3c)
+chaining_state = sb128(0x0)
+plaintext = [sb128(0x6bc1bee22e409f96e93d7e117393172a)] * chunks
+aes128 = Circuit('aes_128')
+
+for chunk in plaintext:
+    tmp = chaining_state ^ chunk
+    res = aes128(sbitvec([key]), sbitvec([tmp]))
+    chaining_state = res[0]
+    res.elements()[0].reveal().print_reg()
