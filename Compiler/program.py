@@ -504,6 +504,10 @@ class Program(object):
             for tape in self.tapes:
                 tape.write_str(self.options.asmoutfile + "-" + tape.name)
 
+        # Making sure that the public_input_file has been properly closed
+        if self.public_input_file is not None:
+            self.public_input_file.close()
+
     def finalize_memory(self):
         self.curr_tape.start_new_basicblock(None, "memory-usage")
         # reset register counter to 0
@@ -1240,12 +1244,18 @@ class Tape:
             def t(x):
                 return "integer" if x == "modp" else x
 
+            def f(num):
+                try:
+                    return "%12.0f" % num
+                except:
+                    return str(num)
+
             res = []
             for req, num in self.items():
                 domain = t(req[0])
                 if num < 0:
                     num = float('inf')
-                n = "%12.0f" % num
+                n = f(num)
                 if req[1] == "input":
                     res += ["%s %s inputs from player %d" % (n, domain, req[2])]
                 elif domain.endswith("edabit"):
@@ -1262,7 +1272,7 @@ class Tape:
                 elif req[0] != "all":
                     res += ["%s %s %ss" % (n, domain, req[1])]
             if self["all", "round"]:
-                res += ["% 12.0f virtual machine rounds" % self["all", "round"]]
+                res += ["%s virtual machine rounds" % f(self["all", "round"])]
             return res
 
         def __str__(self):
