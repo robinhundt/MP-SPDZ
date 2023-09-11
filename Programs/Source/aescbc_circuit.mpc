@@ -19,5 +19,5 @@ def loop(chunk_idx):
     ciphertext[chunk_idx] = res
 
 
-#ciphertext.reveal_list()
+ciphertext.reveal()
 
